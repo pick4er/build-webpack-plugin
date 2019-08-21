@@ -1,0 +1,26 @@
+{
+  "name": "build-webpack-plugin",
+  "version": "1.0.0",
+  "description": "A plugin that proceeds stat about built files",
+  "main": "dist/build-webpack-plugin.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pick4er/build-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "build",
+    "stats",
+    "node"
+  ],
+  "author": "pick4er",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/pick4er/build-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/pick4er/build-webpack-plugin#readme"
+}
