@@ -4,7 +4,10 @@
   "description": "A plugin that proceeds stat about built files",
   "main": "dist/build-webpack-plugin.js",
   "scripts": {
-    "test": "test"
+    "clear": "rm -rf ./dist",
+    "transpile": "babel -w src -d dist --verbose --extensions .ts --source-maps",
+    "typecheck": "tsc --project tsconfig.types.json",
+    "build": "npm run clear && npm run typecheck && npm run transpile"
   },
   "repository": {
     "type": "git",
@@ -17,10 +20,25 @@
     "stats",
     "node"
   ],
+  "engined": {
+    "node": ">=8.9.0"
+  },
   "author": "pick4er",
   "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/pick4er/build-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/pick4er/build-webpack-plugin#readme"
+  "homepage": "https://github.com/pick4er/build-webpack-plugin#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/node": "^12.7.2",
+    "eslint": "^6.2.1",
+    "read-pkg-up": "^6.0.0",
+    "semver": "^6.3.0",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.2"
+  }
 }
