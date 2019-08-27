@@ -2,11 +2,6 @@ import { Compiler, compilation as compilationType } from 'webpack';
 
 type Compilation = compilationType.Compilation;
 
-interface PluginInterface {
-  filename: string;
-  apply(compiler: Compiler): void;
-}
-
 interface Filelist {
   [name: string]: string[];
 }
@@ -65,9 +60,11 @@ function isPlainObject(value: unknown): boolean {
     return prototype === null || prototype === Object.getPrototypeOf({});
 }
 
-class BuildWebpackPlugin implements PluginInterface {
+class BuildWebpackPlugin {
   private readonly validators: Validators | null;
-  filename: string;
+  private filename: string;
+  private filelist: Filelist;
+  private sections: string[];
 
   constructor(options: Options = {}) {
     if (isPlainObject(options) === false) {
@@ -85,54 +82,65 @@ class BuildWebpackPlugin implements PluginInterface {
     } else {
       this.validators = null;
     }
+
+    this.filelist = {
+      rest: [],
+    }
+
+    this.sections = [];
   }
 
   apply(compiler: Compiler): void {
     compiler.hooks.emit.tapAsync(
       'build-webpack-plugin', 
       (compilation: CompilationWithAssets, callback) => {
-        const filelist: Filelist = {
-          rest: [],
-        };
+        this.divideFilelistOnSections();
 
-        if (this.validators === null) {
-          Object.keys(compilation.assets).forEach(filename => {
-            filelist.rest = filelist.rest.concat(filename);
-          });
-        } else {
-          const sections = Object.keys(this.validators) as string[];
+        Object.keys(compilation.assets).forEach(filename => {
+          const matchedSection: string | undefined = this.findFilenameSection(filename);
+          this.addFilenameToFilelistSection(filename, matchedSection);
+        });
 
-          sections.forEach(sectionName => {
-            filelist[sectionName] = []
-          });
-
-          Object.keys(compilation.assets).forEach(filename => {
-            const matchedSection: string | undefined = sections.find(sectionName => (
-              this.validators![sectionName](filename)
-            ));
-
-            if (matchedSection !== undefined) {
-              filelist[matchedSection] = filelist[matchedSection].concat(filename);
-            } else {
-              filelist.rest = filelist.rest.concat(filename);
-            }
-          });
-        }
-
-
-        const jsonFilelist = JSON.stringify(filelist);
-        compilation.assets[this.filename] = {
-          source(): string {
-            return jsonFilelist;
-          },
-          size(): number {
-            return jsonFilelist.length;
-          },
-        }
-
+        this.addFilelistToCompilation(compilation);
         callback()
       }
     );
+  }
+
+  divideFilelistOnSections(): void {
+    if (this.validators === null) return;
+
+    if (this.sections.length === 0) {
+      this.sections = Object.keys(this.validators) as string[];
+    }
+
+    this.sections.forEach(sectionName => {
+      this.filelist[sectionName] = []
+    });
+  }
+
+  findFilenameSection(filename: string): string | undefined {
+    return this.sections.find(sectionName => this.validators![sectionName](filename));
+  }
+
+  addFilenameToFilelistSection(filename: string, section: string | undefined): void {
+    if (section !== undefined) {
+      this.filelist[section] = this.filelist[section].concat(filename);
+    } else {
+      this.filelist.rest = this.filelist.rest.concat(filename);
+    }
+  }
+
+  addFilelistToCompilation(compilation: CompilationWithAssets): void {
+    const jsonFilelist = JSON.stringify(this.filelist);
+    compilation.assets[this.filename] = {
+      source(): string {
+        return jsonFilelist;
+      },
+      size(): number {
+        return jsonFilelist.length;
+      },
+    }
   }
 }
 
@@ -143,7 +151,6 @@ export {
   Validator,
   Options,
 
-  PluginInterface,
   Filelist,
   Compilation,
   CompilationWithAssets,
