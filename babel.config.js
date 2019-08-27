@@ -6,7 +6,7 @@ function applyCache() {
   return process.env.NODE_ENV === 'development';
 }
 
-module.exports = api => {
+module.exports = (api) => {
   api.cache(applyCache());
 
   return {

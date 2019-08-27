@@ -23,9 +23,7 @@ interface Validators {
   [name: string]: Validator;
 }
 
-interface Validator {
-  (filename: string): boolean
-}
+type Validator = (filename: string) => boolean;
 
 interface Options {
   /* 
@@ -52,18 +50,18 @@ interface Options {
 
 // https://github.com/sindresorhus/is-plain-obj/blob/97480673cf12145b32ec2ee924980d66572e8a86/index.js
 function isPlainObject(value: unknown): boolean {
-    if (Object.prototype.toString.call(value) !== '[object Object]') {
-        return false;
-    }
+  if (Object.prototype.toString.call(value) !== '[object Object]') {
+    return false;
+  }
 
-    const prototype = Object.getPrototypeOf(value);
-    return prototype === null || prototype === Object.getPrototypeOf({});
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === null || prototype === Object.getPrototypeOf({});
 }
 
 class BuildWebpackPlugin {
   private readonly validators: Validators | null;
-  private filename: string;
-  private filelist: Filelist;
+  private readonly filename: string;
+  private readonly filelist: Filelist;
   private sections: string[];
 
   constructor(options: Options = {}) {
@@ -85,45 +83,53 @@ class BuildWebpackPlugin {
 
     this.filelist = {
       rest: [],
-    }
+    };
 
     this.sections = [];
   }
 
   apply(compiler: Compiler): void {
     compiler.hooks.emit.tapAsync(
-      'build-webpack-plugin', 
+      'build-webpack-plugin',
       (compilation: CompilationWithAssets, callback) => {
         this.divideFilelistOnSections();
 
-        Object.keys(compilation.assets).forEach(filename => {
-          const matchedSection: string | undefined = this.findFilenameSection(filename);
+        Object.keys(compilation.assets).forEach((filename) => {
+          const matchedSection: string | undefined = this.findFilenameSection(
+            filename,
+          );
           this.addFilenameToFilelistSection(filename, matchedSection);
         });
 
         this.addFilelistToCompilation(compilation);
-        callback()
-      }
+        callback();
+      },
     );
   }
 
-  divideFilelistOnSections(): void {
-    if (this.validators === null) return;
-
-    if (this.sections.length === 0) {
-      this.sections = Object.keys(this.validators) as string[];
-    }
-
-    this.sections.forEach(sectionName => {
-      this.filelist[sectionName] = []
+  public findFilenameSection(filename: string): string | undefined {
+    return this.sections.find((sectionName) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.validators![sectionName](filename);
     });
   }
 
-  findFilenameSection(filename: string): string | undefined {
-    return this.sections.find(sectionName => this.validators![sectionName](filename));
+  private divideFilelistOnSections(): void {
+    if (this.validators === null) return;
+
+    if (this.sections.length === 0) {
+      this.sections = Object.keys(this.validators);
+    }
+
+    this.sections.forEach((sectionName) => {
+      this.filelist[sectionName] = [];
+    });
   }
 
-  addFilenameToFilelistSection(filename: string, section: string | undefined): void {
+  private addFilenameToFilelistSection(
+    filename: string,
+    section: string | undefined,
+  ): void {
     if (section !== undefined) {
       this.filelist[section] = this.filelist[section].concat(filename);
     } else {
@@ -131,8 +137,9 @@ class BuildWebpackPlugin {
     }
   }
 
-  addFilelistToCompilation(compilation: CompilationWithAssets): void {
+  private addFilelistToCompilation(compilation: CompilationWithAssets): void {
     const jsonFilelist = JSON.stringify(this.filelist);
+    // eslint-disable-next-line no-param-reassign
     compilation.assets[this.filename] = {
       source(): string {
         return jsonFilelist;
@@ -140,19 +147,8 @@ class BuildWebpackPlugin {
       size(): number {
         return jsonFilelist.length;
       },
-    }
+    };
   }
 }
 
-export { 
-  BuildWebpackPlugin,
-
-  Validators,
-  Validator,
-  Options,
-
-  Filelist,
-  Compilation,
-  CompilationWithAssets,
-  FilelistAssets,
-};
+export { BuildWebpackPlugin };

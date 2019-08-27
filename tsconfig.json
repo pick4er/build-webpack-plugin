@@ -20,7 +20,7 @@
     "declarationMap": true,
     "allowJs": false,
     // Show diagnostic information.
-    "diagnostics": true,
+    "diagnostics": true
   },
   "include": ["src"]
 }

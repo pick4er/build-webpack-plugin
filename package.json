@@ -2,14 +2,23 @@
   "name": "build-webpack-plugin",
   "version": "1.0.0",
   "description": "A plugin that proceeds stat about built files",
+  "author": "pick4er",
+  "license": "WTFPL",
   "main": "dist/build-webpack-plugin.js",
+  "types": "dist/build-webpack-plugin.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "clear": "rm -rf ./dist",
     "transpile": "babel -w src -d dist --verbose --extensions .ts --source-maps",
     "typecheck": "tsc --project tsconfig.json",
     "build": "npm run clear && npm run typecheck && npm run transpile",
     "lint": "eslint --ext .js,.ts .",
-    "lint-fix": "eslint --ext .js,.ts --fix ."
+    "lint-fix": "eslint --ext .js,.ts --fix .",
+    "format": "prettier \"**/*.{js,mjs,jsx,ts,tsx,json,scss,less,css,md,yml,yaml}\" --write",
+    "prepublishOnly": "npm run build && npm run lint",
+    "release": "np"
   },
   "repository": {
     "type": "git",
@@ -25,8 +34,6 @@
   "engined": {
     "node": ">=8.9.0"
   },
-  "author": "pick4er",
-  "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/pick4er/build-webpack-plugin/issues"
   },
@@ -36,15 +43,20 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.3.3",
-    "@chrisblossom/eslint-config": "^6.1.5",
+    "@chrisblossom/eslint-config": "^5.0.0",
+    "eslint": "^5.16.0",
     "@types/node": "^12.7.2",
     "@types/webpack": "^4.39.0",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
-    "eslint": "^6.2.1",
+    "prettier": "^1.18.2",
     "read-pkg-up": "^6.0.0",
     "semver": "^6.3.0",
     "typescript": "^3.5.3",
     "webpack": "^4.39.2"
+  },
+  "peerDependencies": {
+    "webpack": "*"
+  },
+  "dependencies": {
+    "@types/webpack": "^4.4.31"
   }
 }
