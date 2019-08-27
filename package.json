@@ -1,6 +1,6 @@
 {
   "name": "build-webpack-plugin",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A plugin that proceeds stat about built files",
   "author": "pick4er",
   "license": "WTFPL",
@@ -44,19 +44,17 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.3.3",
     "@chrisblossom/eslint-config": "^5.0.0",
-    "eslint": "^5.16.0",
     "@types/node": "^12.7.2",
-    "@types/webpack": "^4.39.0",
+    "@types/webpack": "^4.39.1",
+    "eslint": "^5.16.0",
     "prettier": "^1.18.2",
     "read-pkg-up": "^6.0.0",
     "semver": "^6.3.0",
     "typescript": "^3.5.3",
-    "webpack": "^4.39.2"
+    "webpack": "^4.39.3"
   },
   "peerDependencies": {
     "webpack": "*"
   },
-  "dependencies": {
-    "@types/webpack": "^4.4.31"
-  }
+  "dependencies": {}
 }
