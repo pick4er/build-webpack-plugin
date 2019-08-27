@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clear": "rm -rf ./dist",
-    "transpile": "babel -w src -d dist --verbose --extensions .ts --source-maps",
+    "transpile": "babel src -d dist --verbose --extensions .ts --source-maps",
     "typecheck": "tsc --project tsconfig.json",
     "build": "npm run clear && npm run typecheck && npm run transpile",
     "lint": "eslint --ext .js,.ts .",

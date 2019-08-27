@@ -19,8 +19,6 @@
     "emitDeclarationOnly": true,
     "declarationMap": true,
     "allowJs": false,
-    // Show diagnostic information.
-    "diagnostics": true
   },
   "include": ["src"]
 }
